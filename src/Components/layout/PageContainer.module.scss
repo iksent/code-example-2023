@@ -1,0 +1,86 @@
+@use "Core/styles/theming" as *;
+@use "Core/styles/mixins" as *;
+@use "Core/styles/mq" as *;
+@use "Core/styles/animations/base" as *;
+
+.top {
+  gap: spacing(2);
+}
+
+.titles {
+  flex: 1;
+  position: relative;
+  column-gap: spacing(3);
+}
+
+.breadcrumbs {
+  @include use-tab-content-animation;
+  @include pos($t: spacing(-1), $l: 0);
+  transform: translateY(-100%);
+  gap: spacing(1);
+}
+
+.content {
+  @include use-page-content-animation;
+  display: flex;
+  gap: spacing(8);
+  margin-top: spacing(7.5);
+  align-items: flex-start;
+}
+
+.main {
+  flex: 1;
+  @include flex-column-stretch-content;
+  @include adaptive-spacing(5, gap);
+}
+
+.sidebar {
+  width: spacing(67);
+  position: sticky;
+  position: -webkit-sticky;
+  top: spacing(3);
+}
+
+@include mq-xl {
+  .content {
+    gap: spacing(4);
+    margin-top: spacing(5);
+  }
+
+  .sidebar {
+    width: spacing(50);
+  }
+}
+
+@include mq-md {
+  .content {
+    @include flex-column-stretch-content;
+    margin-top: spacing(5);
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .reverseMobileLayout {
+    .content {
+      flex-direction: column-reverse;
+    }
+
+    .sidebar {
+      position: static;
+    }
+  }
+}
+
+@include mq-sm {
+  .content {
+    margin-top: spacing(4);
+  }
+}
+
+@include media('<1100px') {
+  .profileCard {
+    display: none !important;
+  }
+}

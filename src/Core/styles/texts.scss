@@ -1,0 +1,212 @@
+@use "Core/styles/utils" as *;
+@use "Core/styles/mq" as *;
+@use "~rfs/scss" as rfs;
+@import '~rfs/scss';
+
+//
+// Configs
+//
+
+$basic: (
+  'xxs': (
+    'size': 12,
+    'line': 1.3em,
+  ),
+  'xs': (
+    'size': 15,
+    'line': 1.3em,
+    'mqs': (
+      'lg': 14,
+      'sm': 13,
+    ),
+  ),
+  'sm': (
+    'size': 18,
+    'line': 1.3em,
+    'mqs': (
+      'xl': 16,
+      'sm': 15,
+    ),
+  ),
+  'md': (
+    'size': 21,
+    'line': 1.3em,
+    'mqs': (
+      'xl': 18,
+      'sm': 17,
+    ),
+  ),
+  'lg': (
+    'size': 24,
+    'line': 1.5em,
+    'mqs': (
+      'xl': 20,
+      'md': 19,
+      'sm': 18,
+    ),
+  ),
+  'xl': (
+    'size': 28,
+    'line': 1.5em,
+    'mqs': (
+      'xl': 24,
+      'sm': 20,
+    ),
+  ),
+);
+
+$captions: (
+  'xxs': (
+    'size': 16,
+    'line': 1.2em,
+    'weight': 700,
+    'mqs': (
+      'xl': 15,
+      'xs': 14,
+    ),
+  ),
+  'xs': (
+    'size': 18,
+    'line': 1.2em,
+    'weight': 700,
+    'mqs': (
+      'xl': 17,
+      'xs': 16,
+    ),
+    'heading': 'h6',
+  ),
+  'sm': (
+    'size': 21,
+    'line': 1.2em,
+    'weight': 700,
+    'mqs': (
+      'xl': 19,
+      'xs': 17,
+    ),
+    'heading': 'h5',
+  ),
+  'md': (
+    'size': 24,
+    'line': 1.2em,
+    'mqs': (
+      'xl': 22,
+      'xs': 20,
+    ),
+    'heading': 'h4',
+  ),
+  'lg': (
+    'size': 36,
+    'line': 1.2em,
+    'mqs': (
+      'xl': 26,
+      'sm': 24,
+      'xs': 22,
+    ),
+    'heading': 'h3',
+  ),
+  'xl': (
+    'size': 48,
+    'line': 1.2em,
+    'mqs': (
+      'xl': 40,
+      'sm': 32,
+      'xs': 24,
+    ),
+    'heading': 'h2',
+  ),
+  '2xl': (
+    'size': 66,
+    'line': 1.2em,
+    'mqs': (
+      'xl': 48,
+      'sm': 40,
+      'xs': 28,
+    ),
+    'heading': 'h1',
+  ),
+);
+
+//
+// Utilities
+//
+
+@mixin text-size($map, $key, $important: false) {
+  $size: map-deep-get($map, $key, 'size');
+  font-size: to-rem($size);
+
+  @if ($important) {
+    font-size: to-rem($size) !important;
+  }
+
+  $mqs: map-deep-get($map, $key, 'mqs');
+  @if ($mqs) {
+    @each $mq, $value in $mqs {
+      @include media('<#{$mq}') {
+        @if ($important) {
+          font-size: to-rem($value) !important;
+        } @else {
+          font-size: to-rem($value);
+        }
+      }
+    }
+  }
+}
+
+@mixin text-settings($map, $key, $mqs: false, $important: false) {
+  @include text-size($map, $key, $important);
+  line-height: map-deep-get($map, $key, 'line');
+  @if ($important) {
+    line-height: map-deep-get($map, $key, 'line') !important;
+  }
+  $spacing: map-deep-get($map, $key, 'spacing');
+  @if ($spacing) {
+    letter-spacing: $spacing;
+    @if ($important) {
+      letter-spacing: $spacing !important;
+    }
+  }
+  transition: color 300ms;
+}
+
+//
+// Generating text classes
+//
+
+@each $key, $value in $basic {
+  .text-#{$key} {
+    @include text-settings($basic, $key);
+    font-weight: 500;
+
+    &.weight-normal,
+    &.weight-medium {
+      font-weight: 500;
+    }
+
+    &.weight-bold {
+      font-weight: 600;
+    }
+  }
+}
+
+@each $key, $value in $captions {
+  $heading: map-deep-get($value, 'heading');
+  $weight: map-deep-get($value, 'weight');
+
+  .caption-#{$key},
+  .with-headings-styles #{$heading} {
+    @include text-settings($captions, $key);
+    @if ($weight) {
+      font-weight: $weight;
+    } @else {
+      font-weight: 800;
+    }
+
+    &.weight-bold {
+      font-weight: 700;
+    }
+
+    &.weight-boldest {
+      font-weight: 800;
+    }
+  }
+}

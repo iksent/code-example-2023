@@ -1,0 +1,212 @@
+@use "./utils" as utils;
+@use "Core/styles/linear-gradient" as *;
+
+$white: rgb(255, 255, 255);
+
+@function color-with-opacity($color, $opacity: null) {
+  @if ($opacity != null) {
+    @return transparentize($color, 1 - $opacity);
+  } @else {
+    @return $color;
+  }
+}
+
+@function white($opacity: null) {
+  @return color-with-opacity($white, $opacity);
+}
+
+/* Base */
+$back-base: $white;
+$blocks-base: $white;
+$neutral-base: #2b2e3b;
+$card-base: #f6f9ff;
+$card-base-alt: #ffffff;
+
+/* Dark */
+$back-dark: #111427;
+$blocks-dark: #111427;
+$neutral-dark: $white;
+$card-dark: #1F2235;
+$card-dark-alt: #040b17;
+
+@function primary($color) {
+  @return (
+    'base': $color,
+    'tr-10': transparentize($color, 0.1),
+    'tr-50': transparentize($color, 0.5),
+    'tr-80': transparentize($color, 0.8),
+    'tr-90': transparentize($color, 0.9),
+    'tr-96': transparentize($color, 0.96),
+    'tr-100': transparentize($color, 1)
+  );
+}
+
+@function layout($back, $blocks, $popup-back) {
+  @return (
+    'background': $back,
+    'background-tr-50': transparentize($back, 0.5),
+    'background-tr-100': transparentize($back, 1),
+    'popup-background': $blocks,
+    'popup-backdrop': $popup-back,
+    'header': $blocks
+  );
+}
+
+@function colored($color) {
+  @return (
+    '100': $color,
+    '500': transparentize($color, 0.5),
+    '900': transparentize($color, 0.9)
+  );
+}
+
+@function neutral($main, $blocks, $card, $card-alt) {
+  $last: mix($main, $blocks, 0%);
+  @return (
+    // Neutral
+    '100': $main,
+    '200': mix($main, $blocks, 80%),
+    '300': mix($main, $blocks, 70%),
+    '400': mix($main, $blocks, 40%),
+    '500': mix($main, $blocks, 20%),
+    '600': mix($main, $blocks, 10%),
+    '650': mix($main, $blocks, 6%),
+    '700': mix($main, $blocks, 3%),
+    '900': $last,
+    '900-tr-30': transparentize($last, 0.3),
+    '900-tr-100': transparentize($last, 1),
+    // Neutral 100 - Transparent
+    'tr-75': transparentize($main, 0.75),
+    'tr-80': transparentize($main, 0.8),
+    'tr-90': transparentize($main, 0.9),
+    'tr-93': transparentize($main, 0.93),
+    // Card
+    'card': $card,
+    'card-tr-30': transparentize($card, 0.3),
+    'card-tr-50': transparentize($card, 0.5),
+    'card-tr-100': transparentize($card, 1),
+    'card-alt': $card-alt,
+    // This is special color, that always dark:
+    'dark-fixed': $neutral-base,
+    'darkest-fixed': #101015,
+    'deep-fixed': #060111
+  );
+}
+
+$primary-base: #5f1bd5;
+$primary-base-900: transparentize($primary-base, 0.85);
+$primary-dark: #7e42e8;
+$primary-dark-900: transparentize($primary-dark, 0.85);
+
+$themes: (
+  'base': (
+    'primary': utils.map-set(primary($primary-base), '900', $primary-base-900),
+    'layout': layout($back-base, $blocks-base, rgba(0, 0, 0, 0.2)),
+    'scroll': (
+      'track': $blocks-base,
+      'thumb': rgba(0, 0, 0, 0.25),
+    ),
+    'neutral': neutral($neutral-base, $blocks-base, $card-base, $card-base-alt),
+    'border': (
+      '100': rgba(0, 0, 0, 0.07),
+      '200': rgba(0, 0, 0, 0.16),
+      '300': rgba(0, 0, 0, 0.25),
+    ),
+    'gradient': (
+      'main': 'linear-gradient(265deg, #82CFFF 0%, #4090F1 63%)',
+      'main-fixed': 'linear-gradient(265deg, #82CFFF 0%, #4090F1 63%)',
+    ),
+  ),
+  'dark': (
+    'primary': utils.map-set(primary($primary-dark), '900', $primary-dark-900),
+    'layout': layout($back-dark, $blocks-dark, rgba(0, 0, 0, 0.7)),
+    'scroll': (
+      'track': 'transparent',
+      'thumb': rgba(255, 255, 255, 0.25),
+    ),
+    'neutral': neutral($neutral-dark, $blocks-dark, $card-dark, $card-dark-alt),
+    'border': (
+      '100': rgba(255, 255, 255, 0.1),
+      '200': rgba(255, 255, 255, 0.25),
+      '300': rgba(255, 255, 255, 0.5),
+    ),
+    'gradient': (
+      'main': 'linear-gradient(265deg, #82CFFF 0%, #4090F1 63%)',
+      'main-fixed': 'linear-gradient(265deg, #82CFFF 0%, #4090F1 63%)',
+    ),
+  ),
+);
+
+@mixin init-themes($themes-list) {
+  @each $name, $map in $themes-list {
+    $selector: 'html';
+    @if ($name != 'base') {
+      $selector: 'html.theme-#{$name}';
+    }
+    #{$selector} {
+      @each $block-key, $block in $map {
+        @each $color-key, $color in $block {
+          --#{$block-key}-#{$color-key}: #{$color};
+        }
+      }
+    }
+  }
+}
+
+$colors: (
+  'white': $white,
+  'telegram': #29b6f6,
+  'visited-link': #660099,
+  'positive': (
+    '100': #30bf8c,
+  ),
+  'warning': (
+    '100': #f2994a,
+  ),
+  'negative': (
+    '100': #ff647c,
+    '10': transparentize(#ff647c, 0.9),
+  ),
+);
+
+@function color($keys...) {
+  @return utils.map-deep-get($colors, $keys...);
+}
+
+@function color-colored($sub...) {
+  @return color('colored', $sub...);
+}
+
+/* Themed colors */
+
+@function color-primary($sub: 'base') {
+  @return var(--primary-#{$sub});
+}
+
+@function color-layout($sub) {
+  @return var(--layout-#{$sub});
+}
+
+@function color-scroll($sub) {
+  @return var(--scroll-#{$sub});
+}
+
+@function color-neutral($sub: '100') {
+  @return var(--neutral-#{$sub});
+}
+
+@function color-border($sub: '100') {
+  @return var(--border-#{$sub});
+}
+
+@function overlay-color($opacity: null) {
+  @return color-with-opacity(color-neutral('100'), $opacity);
+}
+
+@function color-gradient($sub: 'main') {
+  @return var(--gradient-#{$sub});
+}
+
+@function color-gradient-primary($deg: 225deg, $start: 0, $end: 70%) {
+  @return linear-gradient($deg, color-primary('base') $start, color-primary('alt') $end);
+}

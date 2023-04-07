@@ -1,0 +1,50 @@
+@use "Core/styles/theming" as *;
+@use "Core/styles/mixins" as *;
+@use "Core/styles/mq" as *;
+
+.root,
+.modules {
+  @include flex-column-stretch-content;
+  gap: spacing(2);
+}
+
+.id {
+}
+
+.name {
+  flex: 1;
+  margin-right: spacing(2);
+}
+
+.module {
+  gap: spacing();
+}
+
+.moduleInfo {
+  flex: 1;
+}
+
+.dateProgress {
+  width: spacing(10);
+}
+
+.infosList {
+  gap: spacing(2);
+}
+
+.moduleSettings {
+  gap: spacing(1);
+  justify-content: flex-end;
+}
+
+@include mq-sm {
+  .moduleSettings {
+    gap: spacing(0.5);
+  }
+}
+
+@include media('<500px') {
+  .moreTitle {
+    display: none;
+  }
+}

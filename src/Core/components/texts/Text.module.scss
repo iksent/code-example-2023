@@ -1,0 +1,6 @@
+@use "Core/styles/theming" as *;
+
+.isLinkText {
+  font-weight: 500 !important;
+  color: color-neutral();
+}

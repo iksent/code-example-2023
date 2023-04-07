@@ -1,0 +1,427 @@
+/*
+ * Basic Mixins
+ */
+
+@use "Core/styles/mq" as *;
+@use "sass:math";
+
+/// Flex
+/// Usage:
+///
+///   @include flex[(keywords)];
+///
+/// Keywords:
+///
+///   [wrap | column | center* | flex-start* | flex-end* | stretch | baseline | space-around | space-between]
+///
+/// * If only one of these keywords is present, it's used for both justify-content and align-items.
+///   When two keywords are present the first goes in justify-content (main axis) and the other in align-items (perpendicular axis).
+///
+/// Examples:
+///
+///   @include flex;
+///
+///     display: flex;
+///
+///   @include flex(column wrap);
+///
+///     display: flex;
+///     flex-direction: column;
+///     flex-wrap: wrap;
+///
+///   @include flex(center);
+///
+///     display: flex;
+///     justify-content: center;
+///     align-items: center;
+///
+///   @include flex(flex-end flex-start);
+///
+///     display: flex;
+///     justify-content: flex-end;
+///     align-items: flex-start;
+///
+@mixin flex($params: null) {
+  display: flex;
+  $justify-content: null;
+  $align-items: null;
+  @each $value in $params {
+    @if $value == 'wrap' {
+      flex-wrap: wrap;
+    } @else if $value == 'column' {
+      flex-direction: column;
+    } @else if index(space-between space-around, $value) {
+      $justify-content: $value;
+    } @else if index(baseline stretch, $value) {
+      $align-items: $value;
+    } @else if index(flex-start center flex-end, $value) {
+      @if $justify-content {
+        $align-items: $value;
+      } @else {
+        $justify-content: $value;
+        @if not $align-items {
+          $align-items: $value;
+        }
+      }
+    }
+  }
+  justify-content: $justify-content;
+  align-items: $align-items;
+}
+
+/// Flex center for children
+@mixin flex-children-center {
+  @include flex(center);
+}
+
+@mixin flex-column-stretch {
+  @include flex(column);
+  flex: 1;
+}
+
+@mixin flex-column-stretch-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@mixin flex-row-center {
+  @include flex(flex-start center);
+}
+
+@mixin flex-column-center {
+  @include flex(flex-start center column);
+  text-align: center;
+}
+
+@mixin flex-column-start {
+  @include flex(flex-start column);
+}
+
+@mixin flex-width($columns, $margin: 0px) {
+  flex: 1 1 calc(100% / #{$columns} - #{$margin});
+  margin: ($margin / 2);
+}
+
+@mixin flex-width-container($margin) {
+  flex: 1;
+  margin: ($margin / 2) * -1;
+  @include flex(wrap);
+}
+
+/// Center for element
+@mixin centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/// Absolute center
+@mixin absolute-center($horizontal: true, $vertical: true) {
+  position: absolute;
+  @if ($horizontal and $vertical) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } @else if ($horizontal) {
+    left: 50%;
+    transform: translate(-50%, 0);
+  } @else if ($vertical) {
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+/// Size
+/// @param {Length} $width
+/// @param {Length} $height
+/// @param {Bool} $fix-min
+@mixin size($width, $height, $fix-min: false, $fix-max: false) {
+  height: $height;
+  width: $width;
+  @if ($fix-min) {
+    min-width: $width;
+  }
+  @if ($fix-max) {
+    max-width: $width;
+  }
+}
+
+/// Square size
+/// @param {Length} $size
+@mixin square($size, $is-round: false, $fix-min: false) {
+  @include size($size, $size, $fix-min);
+  @if ($is-round) {
+    border-radius: $size / 2;
+  }
+}
+
+/// Position
+@mixin pos($pos: absolute, $t: false, $r: false, $b: false, $l: false, $z: false) {
+  @if $pos {
+    position: $pos;
+  }
+  @if $t {
+    top: $t;
+  }
+  @if $r {
+    right: $r;
+  }
+  @if $b {
+    bottom: $b;
+  }
+  @if $l {
+    left: $l;
+  }
+  @if $z {
+    z-index: $z;
+  }
+}
+
+/// Position Fill
+@mixin pos-fill($pos: absolute, $z: false) {
+  @include pos($pos, 0, 0, 0, 0, $z);
+}
+
+/// Pseudo element
+/// Usage:
+///
+/// div::after {
+///    @include pseudo;
+///    top: -1rem; left: -1rem;
+///    width: 1rem; height: 1rem;
+/// }
+@mixin pseudo($display: block, $pos: absolute, $content: '') {
+  content: $content;
+  display: $display;
+  position: $pos;
+}
+
+@mixin svg-icon-color($base: false, $hover: false) {
+  @if ($base) {
+    svg {
+      color: $base;
+    }
+  }
+
+  @if ($hover) {
+    &:hover {
+      svg {
+        color: $hover;
+      }
+    }
+  }
+}
+
+@mixin svg-icon-size($size) {
+  width: $size;
+  min-width: $size;
+  height: $size;
+}
+
+@mixin svg-icon($size, $color: false, $color-hover: false) {
+  @include svg-icon-size($size);
+  @include svg-icon-color($color, $color-hover);
+}
+
+/// Removes text selection
+@mixin disable-selection {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+@mixin text-wrapping {
+  white-space: pre-line;
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+@mixin text-lines($count: 2) {
+  -webkit-line-clamp: $count;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin no-scroll-bar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  /* Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin no-input-arrows {
+  /* Chrome, Safari, Edge, Opera */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  & {
+    -moz-appearance: textfield;
+  }
+}
+
+/*
+ * Spacing
+ */
+
+@function spacing($size: 1) {
+  @return $size * 8px;
+}
+
+@mixin adaptive-spacing($spacing, $property: margin-top) {
+  #{$property}: spacing($spacing);
+
+  @include mq-xl {
+    #{$property}: math.ceil(spacing($spacing * 0.75));
+  }
+
+  @include mq-lg {
+    #{$property}: math.ceil(spacing($spacing * 0.6));
+  }
+}
+
+@mixin spacing-lg($property: margin-top) {
+  @include adaptive-spacing(8, $property);
+
+  @include mq-sm {
+    #{$property}: spacing(3);
+  }
+}
+
+@mixin spacing-md($property: margin-top) {
+  @include adaptive-spacing(6, $property);
+
+  @include mq-sm {
+    #{$property}: spacing(3);
+  }
+}
+
+@mixin spacing-sm($property: margin-top) {
+  @include adaptive-spacing(4, $property);
+}
+
+@mixin spacing-xs($property: margin-top) {
+  @include adaptive-spacing(3, $property);
+}
+
+@mixin spacing-xxs($property: margin-top) {
+  @include adaptive-spacing(2, $property);
+}
+
+@mixin spaced-items($value, $is-vertical: false, $not-spacing: false, $reverse: false) {
+  $prop: margin-right;
+
+  @if ($is-vertical) {
+    $prop: margin-bottom;
+  }
+
+  $not-type: ':last-child';
+  @if ($reverse) {
+    $not-type: ':first-child';
+  }
+
+  &:not(#{$not-type}) {
+    @if ($not-spacing) {
+      #{$prop}: $value;
+    } @else {
+      #{$prop}: spacing($value);
+    }
+  }
+}
+
+@mixin adaptive-radius($size: 5) {
+  @include adaptive-spacing($size, border-radius);
+}
+
+/*
+ * Grid
+ */
+
+@mixin grid-columns($count, $important: false, $value: 1fr) {
+  $imp: '';
+  @if ($important) {
+    $imp: '!important';
+  }
+  display: grid;
+  grid-template-columns: repeat($count, $value) #{$imp};
+}
+
+@mixin basic-grid {
+  @include grid-columns(6);
+  @include adaptive-spacing(4, grid-gap);
+}
+
+@mixin cards-list-column($reverse: false) {
+  display: flex;
+  align-items: stretch;
+
+  @if ($reverse) {
+    flex-direction: column-reverse;
+  } @else {
+    flex-direction: column;
+  }
+
+  > * {
+    @include spaced-items(3, true, $reverse: $reverse);
+
+    @include mq-sm {
+      @include spaced-items(2, true, $reverse: $reverse);
+    }
+  }
+}
+
+@mixin header($isSticky: false) {
+  @if ($isSticky) {
+    box-shadow: 0 0 spacing(5) rgba(0, 0, 0, 0.1);
+  } @else {
+    transition-property: height, box-shadow, transform;
+    transition-duration: 500ms;
+  }
+}
+
+@keyframes splash {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+@mixin with-splash($before: false, $duration: 3000ms) {
+  position: relative;
+  $prefix: 'after';
+  @if ($before) {
+    $prefix: 'before';
+  }
+  &:#{$prefix} {
+    @include pseudo;
+    @include pos-fill($z: -1);
+    animation: splash $duration infinite;
+  }
+}
+
+@mixin revert-z-indexes($count) {
+  @for $i from 0 through $count {
+    > *:nth-child(#{$i}) {
+      @include pos(relative, $z: $count - $i);
+    }
+  }
+}

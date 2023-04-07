@@ -1,0 +1,280 @@
+@use "Core/styles/utils" as *;
+@use "Core/styles/theming" as *;
+@use "Core/styles/mixins" as *;
+@use "Core/styles/mq" as *;
+
+$transition-duration: 400ms;
+
+@mixin interactive() {
+  @media (hover: hover) {
+    &:not(.disabled):not(.fetching) {
+      @content;
+    }
+  }
+}
+
+@mixin border-radius($spacing) {
+  border-radius: spacing($spacing);
+}
+
+@mixin base($elements-color) {
+  border: none;
+
+  .title {
+    color: $elements-color;
+  }
+
+  .spinner {
+    color: $elements-color !important;
+  }
+
+  .icon {
+    @include svg-icon-color($elements-color);
+  }
+}
+
+@mixin alt($elements-color) {
+  border: 1px solid $elements-color;
+  background: transparent;
+
+  .title {
+    color: $elements-color;
+  }
+
+  .spinner {
+    color: $elements-color !important;
+  }
+
+  .icon {
+    @include svg-icon-color($elements-color);
+  }
+}
+
+@mixin size($spacing) {
+  $v: spacing($spacing);
+  height: $v;
+  min-width: $v;
+  &:not(.withTitle) {
+    max-width: $v;
+  }
+}
+
+.root {
+  @include flex-children-center;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  transition-property: background, border, transform !important;
+  transition-duration: $transition-duration;
+
+  > * {
+    @include pos(relative, $z: 10);
+  }
+
+  .title,
+  .icon {
+    transition: color $transition-duration;
+  }
+
+  @include interactive {
+    &:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  .title {
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  &.fetching {
+    .title,
+    .icon {
+      visibility: hidden;
+    }
+  }
+
+  .spinnerBox {
+    @include absolute-center();
+    font-size: 0;
+  }
+
+  /// Base style
+
+  &.base {
+    @include base(white());
+    background: color-primary();
+  }
+
+  /// Light style
+
+  &.light {
+    @include base(color-primary());
+    background: color-primary('900');
+  }
+
+  &.light-alt {
+    @include base(color-primary());
+    background: white();
+  }
+
+  /// Alt style
+
+  &.alt {
+    @include alt(color-primary());
+
+    // TODO: Negative + Positive styles
+    //
+    //&.negative {
+    //  @include alt(color('negative', '100'));
+    //}
+    //
+    //&.positive {
+    //  @include alt(color('positive', '100'));
+    //}
+  }
+
+  /// Flat style
+
+  &.flat {
+    background: transparent;
+    @include base(color-primary());
+  }
+
+  &.flat-alt {
+    background: transparent;
+    @include base(color-neutral('400'));
+  }
+
+  // Sizes
+
+  &.large {
+    @include size(8);
+    @include border-radius(1.5);
+    gap: spacing(3 / 2);
+
+    &.withTitle {
+      padding: 0 spacing(4);
+    }
+
+    @include mq-xl {
+      @include size(7);
+
+      &.withTitle {
+        padding: 0 spacing(3.5);
+      }
+    }
+
+    .icon {
+      @include svg-icon-size(spacing(2.5));
+
+      @include mq-xxs {
+        @include svg-icon-size(spacing(2));
+      }
+    }
+
+    .title {
+      font-size: to-rem(17);
+
+      @include mq-xl {
+        font-size: to-rem(16);
+      }
+
+      @include mq-xxs {
+        font-size: to-rem(15);
+      }
+    }
+  }
+
+  &.medium {
+    @include size(7);
+    @include border-radius(1.5);
+    gap: spacing(3 / 2);
+
+    &.withTitle {
+      padding: 0 spacing(3);
+    }
+
+    @include mq-xl {
+      @include size(6);
+
+      &.withTitle {
+        padding: 0 spacing(2.5);
+      }
+    }
+
+    .icon {
+      @include svg-icon-size(spacing(2.5));
+
+      @include mq-xxs {
+        @include svg-icon-size(spacing(2));
+      }
+    }
+
+    .title {
+      font-size: to-rem(15);
+
+      @include mq-xl {
+        font-size: to-rem(14);
+      }
+
+      @include mq-xxs {
+        font-size: to-rem(13);
+      }
+    }
+  }
+
+  &.small {
+    @include size(5);
+    @include border-radius(1);
+    gap: spacing(3 / 4);
+
+    &.withTitle {
+      padding: 0 spacing(2);
+    }
+
+    @include mq-xl {
+      @include size(4.5);
+
+      &.withTitle {
+        padding: 0 spacing(1.5);
+      }
+    }
+
+    .icon {
+      @include svg-icon-size(spacing(2));
+    }
+
+    .title {
+      font-size: to-rem(14);
+
+      @include mq-xs {
+        font-size: to-rem(13);
+      }
+    }
+  }
+}
+
+.isAdaptiveHeight {
+  height: auto !important;
+  padding-top: spacing(2) !important;
+  padding-bottom: spacing(2) !important;
+
+  .title {
+    white-space: pre-wrap;
+    line-height: 1.2;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "GraphQL Schema",
+  "extensions": {
+    "endpoints": {
+      "Admin": {
+        "schemaPath": "schema-admin.graphql",
+        "url": "https://example.com/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        },
+        "introspect": false
+      }
+    }
+  }
+}

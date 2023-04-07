@@ -1,0 +1,118 @@
+/*
+ * Input mixins
+ */
+@use "Core/styles/utils" as *;
+@use "Core/styles/theming" as *;
+@use "Core/styles/mixins" as *;
+@use "Core/styles/mq" as *;
+
+@mixin container-height {
+  min-height: spacing(7);
+
+  @include mq-xl {
+    min-height: spacing(6);
+  }
+}
+
+@mixin container-common {
+  @include container-height;
+  transition: box-shadow 300ms, border-color 300ms;
+  border-radius: spacing(1.5);
+}
+
+@mixin input-border($color, $splash-color: false, $width: 1px) {
+  $value: inset 0 0 0 $width $color;
+  @if ($splash-color) {
+    $splash: 0 0 0 4px $splash-color;
+    $value: $value + ',' + $splash;
+  }
+  box-shadow: #{$value} !important;
+}
+
+@mixin container {
+  @include container-common;
+  @include input-border(color-border('200'));
+  border: none;
+  background: none;
+}
+
+@mixin container-alt {
+  @include container-common;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+  border: none !important;
+}
+
+@mixin disabled {
+  opacity: 0.5;
+}
+
+@mixin hovered {
+  @include input-border(color-border('300'), $width: 2px);
+}
+
+@mixin focused {
+  @include input-border(color-primary(), $width: 2px);
+}
+
+@mixin filled {
+  @include input-border(color-primary());
+}
+
+@mixin invalid {
+  @include input-border(color('negative', '100'), $width: 2px);
+}
+
+@mixin text {
+  font-size: to-rem(16);
+  line-height: 1.2;
+  color: color-neutral('100');
+}
+
+@mixin text-disabled {
+}
+
+@mixin icon {
+  @include svg-icon(spacing(2.5) !important, color-neutral('300'));
+}
+
+@mixin icon-hover {
+  @include svg-icon-color(color-neutral('200'));
+}
+
+@mixin icon-focused {
+  @include svg-icon-color(color-primary());
+}
+
+@mixin icon-filled {
+  @include svg-icon-color(color-primary());
+}
+
+@mixin icon-invalid {
+  @include svg-icon-color(color('negative', '100'));
+}
+
+@mixin icon-disabled {
+}
+
+@mixin inputPlaceholder {
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+  &::-webkit-input-placeholder {
+    @content;
+  }
+}
+
+@mixin placeholder {
+  @include text;
+  color: color-neutral('400');
+  @include mq-xs {
+    font-size: to-rem(16);
+  }
+}

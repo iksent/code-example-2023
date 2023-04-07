@@ -1,0 +1,19 @@
+@use "Core/styles/theming" as *;
+@use "Core/styles/mixins" as *;
+
+.root {
+  margin-top: spacing();
+}
+
+.error {
+  margin-top: spacing(0.5);
+}
+
+.icon {
+  @include svg-icon(spacing(2), color('negative', '100'));
+  margin-right: spacing();
+}
+
+.text {
+  color: color('negative', '100');
+}

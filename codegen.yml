@@ -1,0 +1,38 @@
+generates:
+  ./src/Graphql/generated-admin.ts:
+    schema: https://example.com/graphql
+    documents:
+      - src/Graphql/*
+    config:
+      dedupeFragments: true
+      preResolveTypes: true
+      skipTypeNameForRoot: true
+      exportFragmentSpreadSubTypes: true
+      skipTypename: true
+      maybeValue: T
+      withRefetchFn: true
+      exposeFetcher: true
+      exposeDocument: true
+      exposeQueryKeys: true
+      createInfiniteQueries: true
+      avoidOptionals:
+        field: true
+        inputValue: true
+        object: false # args & variables
+      fetcher:
+        endpoint: "`${process.env.NODE_ENV === 'development' && typeof window !== 'undefined'
+          ? ''
+          : typeof window === 'undefined' && process.env.CMS_ORIGIN_SSR || process.env.CMS_ORIGIN || ''}/graphql`"
+        fetchParams:
+          headers:
+            Content-Type: application/json
+    hooks:
+      afterOneFileWrite:
+        - prettier --write
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-query'
+      - add:
+          placement: append
+          content: 'export { fetcher }'

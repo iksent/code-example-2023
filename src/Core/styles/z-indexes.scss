@@ -1,0 +1,34 @@
+/**
+ * Z-indexes management
+ */
+@use "./utils";
+
+$z-layers: (
+  'confirmation': 2000,
+  'mui-menu': 1400,
+  'mui': 1300,
+  'mq': 1000,
+  'modal': (
+    'close': 100,
+    'header': 50,
+    'footer': 10,
+  ),
+  'side-layout': (
+    'mobile-header': 30,
+    'content': 20,
+    'menu': 10,
+  ),
+  'page-bottom-link': 600,
+  'scroll-to-top': 500,
+  'global-notice': 110,
+  'sticky-menu': 100,
+  'select-menu': 90,
+  'default': 1,
+  'below': -1,
+);
+
+/// Function to get z-index stored in map
+/// Usage: z-index: z('example');
+@function z($keys...) {
+  @return utils.map-deep-get($z-layers, $keys...);
+}

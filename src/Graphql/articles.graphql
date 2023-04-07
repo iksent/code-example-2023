@@ -1,0 +1,72 @@
+fragment ArticleBase on article {
+  id
+  create_date
+  update_date
+  image {
+    id
+  }
+  translations(filter: { languages_id: { code: { _eq: $lang } } }) {
+    title
+    slug
+    summary
+    languages_id {
+      code
+    }
+  }
+}
+
+fragment Article on article {
+  id
+  create_date
+  update_date
+  image {
+    id
+  }
+  translations(filter: { languages_id: { code: { _eq: $lang } } }) {
+    title
+    slug
+    summary
+    content
+    languages_id {
+      code
+    }
+  }
+}
+
+query articles($page: Int = 0, $limit: Int = 10, $lang: String = "ru") {
+  article(sort: ["-create_date"], page: $page, limit: $limit) {
+    ...ArticleBase
+  }
+}
+
+query article($slug: String, $lang: String = "ru") {
+  article(filter: { translations: { slug: { _eq: $slug } } }) {
+    ...Article
+  }
+}
+
+query prevNextArticles(
+  $prevFilter: article_filter
+  $nextFilter: article_filter
+  $lang: String = "ru"
+) {
+  prev: article(page: 0, sort: ["-create_date"], limit: 1, filter: $prevFilter) {
+    ...ArticleBase
+  }
+  next: article(page: 0, sort: ["create_date"], limit: 1, filter: $nextFilter) {
+    ...ArticleBase
+  }
+}
+
+query articlesSitemap {
+  article(sort: ["-create_date"], limit: -1, filter: { status: { _eq: "published" } }) {
+    create_date
+    update_date
+    translations(filter: { title: { _nempty: true } }) {
+      slug
+      languages_id {
+        code
+      }
+    }
+  }
+}

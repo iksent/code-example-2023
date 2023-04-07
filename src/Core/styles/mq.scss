@@ -1,0 +1,47 @@
+$breakpoints: (
+  'xxs': 360px,
+  'xs': 425px,
+  'sm': 1000px,
+  'md': 1250px,
+  'lg': 1350px,
+  'xl': 1700px,
+  'xxl': 1920px,
+);
+
+@import '~include-media/dist/include-media';
+
+@mixin mq-xxs {
+  @include media('<xxs') {
+    @content;
+  }
+}
+
+@mixin mq-xs {
+  @include media('<xs') {
+    @content;
+  }
+}
+
+@mixin mq-sm {
+  @include media('<sm') {
+    @content;
+  }
+}
+
+@mixin mq-md {
+  @include media('<md') {
+    @content;
+  }
+}
+
+@mixin mq-lg {
+  @include media('<lg') {
+    @content;
+  }
+}
+
+@mixin mq-xl {
+  @include media('<xl') {
+    @content;
+  }
+}

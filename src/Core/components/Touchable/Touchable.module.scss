@@ -1,0 +1,17 @@
+.root {
+  outline: none;
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover {
+      cursor: pointer;
+      transition: opacity 300ms;
+      opacity: 0.85;
+    }
+  }
+
+  &.disabled {
+    opacity: 1;
+    cursor: default;
+  }
+}
